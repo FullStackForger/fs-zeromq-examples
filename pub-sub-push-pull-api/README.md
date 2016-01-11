@@ -36,9 +36,20 @@ REP api/user/4
 PREQ api/user/4?q=fname
 PREP api/user/2?q=lname
 ```
-#### Message pattern type
+#### Message type
 
-#### Message pattern string
+* REQ - action request sent from proxy (PUSH) to registry and forwarded (PUB) to service
+* REP - action reply sent (PUSH) from client to registry and sent back (PUSH) to proxy
+* PREQ - partial (internal) request sent (PUSH) from service to registry and sent back to service (PUB)
+* PREP - partial reply sent from (PUSH) service and sent back (PUSH) to service
+
+#### Message pattern
+Action pattern is regular request string used for pattern matching and allows service clients to subscribe only to messages they are interested in, eg.:
+```
+api/user/4?q=fname
+```
+
+
 
 ### Message data
 Second part of the message stores data information. It is expected to be a JSON string, regular stringified data object, eg.:
