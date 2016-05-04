@@ -20,7 +20,7 @@ receiver.on('message', function(buf) {
   // process task
   processTask(msec)
 
-});
+})
 
 // pretend processing task
 function processTask(msec) {
@@ -29,17 +29,17 @@ function processTask(msec) {
   if (timeouts.length == 0 || inProgress) return
   inProgress = true
   setTimeout(function() {
-    sender.send("");
+    sender.send("")
     inProgress = false
     processTask()
-  }, timeouts.shift());
+  }, timeouts.shift())
 }
 
-receiver.connect('tcp://localhost:5557');
-sender.connect('tcp://localhost:5558');
+receiver.connect('tcp://localhost:5557')
+sender.connect('tcp://localhost:5558')
 
 process.on('SIGINT', function() {
-  receiver.close();
-  sender.close();
-  process.exit();
-});
+  receiver.close()
+  sender.close()
+  process.exit()
+})

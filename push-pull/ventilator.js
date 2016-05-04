@@ -2,9 +2,9 @@
 // Binds PUSH socket to tcp://localhost:5557
 // Sends batch of tasks to workers via that socket.
 
-var zmq = require('zmq');
-process.stdin.resume();
-//require('tty').setRawMode(true);
+var zmq = require('zmq')
+process.stdin.resume()
+//require('tty').setRawMode(true)
 
 // Socket to send messages on
 var
@@ -15,7 +15,7 @@ var
 sender.bindSync("tcp://*:5557")
 
 function work() {
-  console.log("Sending tasks to workers…");
+  console.log("Sending tasks to workers…")
 
   // The first message is "0" and signals start of batch
   sender.send("0")
@@ -34,23 +34,23 @@ function work() {
   i = 0
   total_msec = 0
   initilize()
-  process.stdin.resume();
-};
+  process.stdin.resume()
+}
 
 function initilize() {
-  console.log("Press enter when the workers are ready…");
+  console.log("Press enter when the workers are ready…")
   process.stdin.on("data", function() {
     if (i === 0) {
-      work();
+      work()
     }
-    //process.stdin.pause();
-  });
+    //process.stdin.pause()
+  })
 }
 
 process.on('SIGINT', function() {
-  sender.close();
-  process.exit();
-});
+  sender.close()
+  process.exit()
+})
 
 
 initilize()
