@@ -1,3 +1,4 @@
+# Request Reply with ExpressJS
 
 ## Overview
 
@@ -15,14 +16,14 @@
  +---------------+          
  ```
  
- ### ZeroMQ Server
+### ZeroMQ Server
  
- 0MQ Server listens for requests on TCP socket port 5555.
+0MQ Server listens for requests on TCP socket port 5555.
  
- ### ExpressJS server / ZeroMQ Client
+### ExpressJS server / ZeroMQ Client
   
- Express server listens for incoming HTTP requests 
- and sends those to ZeroMQ Server.
+Express server listens for incoming HTTP requests 
+and sends those to ZeroMQ Server.
   
- It is effectively a ZeroMQ client connected to socket port 5555.
+It is effectively a ZeroMQ client connected to socket port 5555.
  
