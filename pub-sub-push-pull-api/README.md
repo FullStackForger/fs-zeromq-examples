@@ -24,7 +24,7 @@ PUB-SUB PUSH-PULL is a combination of messaging patterns:
  +---------------+          +---------------+
  ```
 
-### Transport
+## Transport
 
 Services use 2 part (multipart type) message to communicate.
 
@@ -67,9 +67,9 @@ It is expected to be a JSON string, regular stringified data object, eg.:
 {"uri":"api/user/4","id":4}
 ```
 
-### Components
+## Components
 
-#### Proxy
+### Proxy
 
 **Connections**
 
@@ -85,7 +85,7 @@ It is expected to be a JSON string, regular stringified data object, eg.:
 * Collects request action results (PULL).
 * Responds to http(s) request.
 
-#### Registry
+### Registry
 
 **Connections**
 
@@ -101,7 +101,7 @@ It is expected to be a JSON string, regular stringified data object, eg.:
 * Receives processed results (PULL).
 * Pushes back collected results (PUSH).
 
-#### Service(s)
+### Service(s)
 
 **Connections**
 
