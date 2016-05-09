@@ -2,7 +2,7 @@
 var zmq = require('zmq')
 
 process.stdin.resume()
-//require('tty').setRawMode(true);
+//require('tty').setRawMode(true)
 
 var
   pullSock = zmq.socket('pull'),
@@ -19,15 +19,15 @@ process.on('SIGINT', function() {
   pullSock.close()
   pubSock.close()
   process.exit()
-});
+})
 
 pullSock.on('message', function() {
 
-  let header = arguments[0].toString()
-  let type = header.split(' ').shift()
+  let pattern = arguments[0].toString()
+  let type = pattern.split(' ').shift()
   let data = arguments[1].toString()
 
-  console.log('PULL\t', header, '\t', data)
+  console.log('PULL\t', pattern, '\t', data)
 
   switch(type) {
     case 'REQ':
