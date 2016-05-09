@@ -31,12 +31,12 @@ pullSock.on('message', function() {
 
   switch(type) {
     case 'REQ':
-      console.log('PUB\t', header, '\t', data)
-      pubSock.send([header, data])
+      console.log('PUB\t', pattern, '\t', data)
+      pubSock.send([pattern, data])
       break
     case 'REP':
-      console.log('PUSH\t', header, '\t', data)
-      pushSock.send([header, data])
+      console.log('PUSH\t', pattern, '\t', data)
+      pushSock.send([pattern, data])
       break
   }
 })
