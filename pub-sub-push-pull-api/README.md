@@ -1,4 +1,4 @@
-# PUB-SUB PUSH-PULL
+# PUB-SUB PUSH-PULL API
 
 ## Overview
 
