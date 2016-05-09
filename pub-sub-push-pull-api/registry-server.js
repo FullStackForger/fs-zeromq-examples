@@ -2,7 +2,7 @@
 var zmq = require('zmq')
 
 process.stdin.resume()
-//require('tty').setRawMode(true);
+//require('tty').setRawMode(true)
 
 var
   pullSock = zmq.socket('pull'),
@@ -15,11 +15,11 @@ pushSock.bindSync("tcp://*:5011")
 pubSock.bindSync("tcp://*:5012")
 
 process.on('SIGINT', function() {
-  pushSock.close();
-  pullSock.close();
-  pubSock.close();
-  process.exit();
-});
+  pushSock.close()
+  pullSock.close()
+  pubSock.close()
+  process.exit()
+})
 
 pullSock.on('message', function() {
 
