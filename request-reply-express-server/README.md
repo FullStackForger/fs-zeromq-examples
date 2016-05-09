@@ -1,4 +1,5 @@
 # Request Reply with ExpressJS
+Inspired by [stackoverflow](http://stackoverflow.com/questions/25830002/how-to-receive-zmq-message-inside-express-middleware) question.
 
 ## Overview
 
