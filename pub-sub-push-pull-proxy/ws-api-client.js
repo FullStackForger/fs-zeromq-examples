@@ -8,14 +8,14 @@ var
   port = 4000,
   pushSock = zmq.socket('push'),
   subSock = zmq.socket('sub'),
-  queue = []
+	patternFilter = '/api'
 
 pushSock
   .connect("tcp://localhost:5000")
 
 subSock
   .connect("tcp://localhost:5002")
-  .subscribe('REQ /api')
+  .subscribe(['REQ', patternFilter].join(' '))
   .on('message', parseMessage)
 
 http.createServer(function(request, response) {
