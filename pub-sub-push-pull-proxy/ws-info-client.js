@@ -8,21 +8,24 @@ var
   port = 3000,
   pushSock = zmq.socket('push'),
   subSock = zmq.socket('sub'),
-  queue = []
+	patternFilter = '/info'
 
 pushSock
   .connect("tcp://localhost:5000")
 
 subSock
   .connect("tcp://localhost:5002")
-  .subscribe('REQ /info')
+  .subscribe(['REQ', patternFilter].join(' '))
   .on('message', parseMessage)
 
 http.createServer(function(request, response) {
   response.writeHead(200, {"Content-Type": "text/html"})
+	response.write('<h3>Request info</h3>')
+	response.write('<hr />')
   response.write("<pre>")
   response.write(JSON.stringify(url.parse(request.url), true, 2))
   response.write("</pre>")
+	response.write('<hr />')
   response.end()
 }).listen(port)
 console.log("INFO web server listening on port " + port)
