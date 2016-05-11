@@ -1,5 +1,4 @@
 'use strict'
-
 var
   http = require('http'),
   url = require('url'),
@@ -8,10 +7,9 @@ var
   pushSock = zmq.socket('push'),
   pullSock = zmq.socket('pull'),
   proxy = httpProxy.createProxyServer({}),
-  cache = [], // { pathname, address }
-  cacheQuota = 1000,
-  reqTimeout = 150,
-  reqInterval = 10
+  cache = [], 				// Array of records { pathname, address }
+  reqTimeout = 150,		// max time (ms) proxy will wait before timing out request
+  reqInterval = 10		// how ofter
 
 pushSock.connect("tcp://localhost:5000")
 pullSock.connect("tcp://localhost:5001")
@@ -34,14 +32,16 @@ process.on('SIGINT', function() {
   process.exit()
 });
 
-var server = http.createServer(function(request, response) {
+http.createServer(function(request, response) {
   let requestTime = Date.now()
   let intervalId = setInterval(() => {
-    tryProxyRequest(request, response).then(() => {
-        clearInterval(intervalId)
-    })
+    proxyHTTPRequest(request, response)
+			.then(() => {
+				clearInterval(intervalId)
+			})
 
-    if (Date.now() - requestTime > reqTimeout) {
+		let hasTimedOut = Date.now() - requestTime > reqTimeout;
+    if (hasTimedOut) {
       response.writeHead(504, {"Content-Type": "text/html"})
       response.write("<h1>504 Gateway Timeout</h1>")
       response.end()
@@ -52,7 +52,7 @@ var server = http.createServer(function(request, response) {
 
 console.log("PROXY listening on port 8080")
 
-function tryProxyRequest (request, response) {
+function proxyHTTPRequest (request, response) {
   let query = url.parse(request.url)
   let pathname = query.pathname
   let error = null
@@ -63,14 +63,15 @@ function tryProxyRequest (request, response) {
   }
 
   return new Promise(function (resolve, reject) {
-    if (error !== null) return reject(error)
+    if (error !== null) {
+    	return reject(error)
+		}
     try {
-        console.log('PROXY\t', record.pathname, '>', record.address)
-        proxy.web(request, response, { target: record.address });
-        if (record.pathname)
-        resolve()
+				console.log('PROXY\t', record.pathname, '>', record.address)
+				proxy.web(request, response, { target: record.address });
+				return resolve()
     } catch (e) {
-      reject(e)
+      return reject(e)
     }
   })
 }
