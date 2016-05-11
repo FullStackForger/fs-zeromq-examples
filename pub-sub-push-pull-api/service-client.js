@@ -6,7 +6,7 @@ var
   YAML = require('yamljs'),
   pushSock = zmq.socket('push'), // connects to pull on 5010
   subScok = zmq.socket('sub'), // connects to pub on 5012
-  filter = 'api/user',
+  patternFilter = 'api/user',
   queue = []
 
 process.stdin.resume();
@@ -17,9 +17,9 @@ subScok.connect("tcp://localhost:5012")
 
 //subScok.subscribe('')
 
-subScok.subscribe(['REQ', filter].join(' '))
-subScok.subscribe(['PREQ', filter].join(' '))
-subScok.subscribe(['PREP', filter].join(' '))
+subScok.subscribe(['REQ', patternFilter].join(' '))
+subScok.subscribe(['PREQ', patternFilter].join(' '))
+subScok.subscribe(['PREP', patternFilter].join(' '))
 
 
 subScok.on('message', function() {
