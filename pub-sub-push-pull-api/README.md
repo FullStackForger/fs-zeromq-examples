@@ -4,24 +4,25 @@
 
 PUB-SUB PUSH-PULL is a combination of messaging patterns:
 * **bi-directional push-pull** to provide asynchronous (not blocking) **request-reply** like communication between the Proxy and the Registry.
+This architecture makes it possible to send another request before the previous one has been replied to (no lock-step).
 * combination of **pub-sub** and **push-pull** to:
  * broadcast action to connected worker Services (pub-sub) and collect results (push-pull) as they come
  * push results back into connected Proxy client (push-pull)
 
  ```
- .  http(s)                                               +---------------+
-     req/res                +---------------+          +---------------+  |
-      v   ^                 |     PUB (3)   | <------- |  (4) SUB      |--+
- +---------------+          +---------------+          +---------------+  |
- |               |          |               |          |               |  |
- |     Proxy     |          |   Registry    |          |    Service    |  |
- |     client    |          |    server     |          |    client(s)  |  |
- |               |          |               |          |               |--+
- +---------------+          +---------------+          +---------------+  |
- |     PUSH (1)  | -------> |  (2) PULL (6) | <------- |  (5) PUSH     |--+
- +---------------+          +---------------+          +---------------+
- |     PULL (8)  | -------> |  (7) PUSH     |
- +---------------+          +---------------+
+ .  http(s)                                         +---------------+
+     req/res             +---------------+       +---------------+  |
+      v   ^              |     PUB (3)   o--->---|  (4) SUB      |--+
+ +---------------+       +---------------+       +---------------+  |
+ |               |       |               |       |               |  |
+ |   Request     |       |   Registry    |       |    Worker     |  |
+ |   client      |       |    server     |       |    client(s)  |  |
+ |               |       |               |       |               |--+
+ +---------------+       +---------------+       +---------------+  |
+ |     PUSH (1)  |--->---o  (2) PULL (6) o---<---|  (5) PUSH     |--+
+ +---------------+       +---------------+       +---------------+
+ |     PULL (8)  |---<---o  (7) PUSH     |
+ +---------------+       +---------------+
  ```
 
 ## Transport
