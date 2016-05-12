@@ -3,7 +3,6 @@ var
   url = require('url'),
   querystring = require('querystring'),
   zmq = require('zmq'),
-  YAML = require('yamljs'),
   pushSock = zmq.socket('push'), // connects to pull on 5010
   subScok = zmq.socket('sub'), // connects to pub on 5012
   patternFilter = 'api/user',
