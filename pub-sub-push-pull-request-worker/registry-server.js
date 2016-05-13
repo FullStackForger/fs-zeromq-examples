@@ -33,7 +33,7 @@ pullSock.on('message', function() {
     case 'REQ':
     case 'PREQ':
     case 'PREP':
-      console.log('PUB\t', pattern, '\t', data)
+      console.log('PUB \t', pattern, '\t', data)
       pubSock.send([pattern, data])
       break
     case 'REP':
