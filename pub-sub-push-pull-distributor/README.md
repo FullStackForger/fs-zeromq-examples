@@ -1,4 +1,4 @@
-# PUB-SUB PUSH-PULL API
+# PUB-SUB PUSH-PULL Distributor
 
 ## Rationale
 
@@ -58,9 +58,6 @@ communication between the Proxy and the Registry allowing:
  |     PULL (8)  |---<---o  (7) PUSH     |
  +---------------+       +---------------+
  ```
-
-
-
 
 ## Transport
 
