@@ -3,7 +3,7 @@
 ## Rationale
 
 Regular 0MQ REQ-REP is a synchronous ([blocking][b1]) connection.
-It is not suitable for a service processing requests processed by multiple
+It is not suitable architecture where single request is a result of processing by multiple
 services and completed at different times.  
 We need a solution that would permit processing a request before the processing
 of the previous request one has been completed.  Using PUB-SUB PUSH-PULL
@@ -16,15 +16,16 @@ us REQ-REP lock-step.
 
 For best console log run in 3 separate terminals
 ```
-node proxy-client.js
-node service-client.js
-node registry-server.js
+node Distributor-server.js
+node device-provider-client.js
+node user-provider-client.js
+node consumer-client.js
 ```
 
-> It is important you run `registry-client` before you run `service-client`
+> It is important you run `Distributor-client` before you run `service-client`
 
-Run `registry-client` as the last service to keep PUB-SUB connection in sync.
-Otherwise, registry will publish messages and because of missing subscribers they will be dropped.
+Run `Distributor-client` as the last service to keep PUB-SUB connection in sync.
+Otherwise, Distributor will publish messages and because of missing subscribers they will be dropped.
 
 If have similar architecture in production order of starting services doesn't really matter.
 Some request will not be processed either way as it takes time to:
@@ -35,29 +36,31 @@ Some request will not be processed either way as it takes time to:
 
 PUB-SUB PUSH-PULL is a combination of messaging patterns:
 * bi-directional PUSH-PULL providing asynchronous (not blocking) REQ-REP like
-communication between the Proxy and the Registry allowing:
+communication between the Consumer and the Distributor allowing:
   * sending request for processing,
   * receiving completed results back
 * combination of PUB-SUB and PUSH-PULL enabling:
   * broadcasting actions via PUB-SUB to connected Services,
-  * collecting comlpeted results via PUSH-PULL, before sending it back
-  the request proxy
+  * collecting completed results via PUSH-PULL, before sending it back
+  the request Consumer
 
- ```
- .  http(s)                                         +---------------+
-     req/res             +---------------+       +---------------+  |
- +---------------+       |     PUB (3)   o--->---|  (4) SUB      |--+
- |               |       +---------------+       +---------------+  |
- |   Request     |       |               |       |               |  |
- |   proxy       |       |   Registry    |       |    Service    |  |
- |   client      |       |    server     |       |    client(s)  |  |
+```
+.                                                   +---------------+
+                         +---------------+       +---------------+  |
+                         |     PUB (3)   o--->---|  (4) SUB      |--+
+ +---------------+       +---------------+       +---------------+  |
+ |               |       |               |       |               |  |
+ |   Consumer    |       |  Distributor  |       |    Provider   |  |
+ |   client      |       |   server      |       |    client(s)  |  |
+ |               |       |               |       |               |  |
  |               |       |               |       |               |--+
  +---------------+       +---------------+       +---------------+  |
  |     PUSH (1)  |--->---o  (2) PULL (6) o---<---|  (5) PUSH     |--+
  +---------------+       +---------------+       +---------------+
  |     PULL (8)  |---<---o  (7) PUSH     |
  +---------------+       +---------------+
- ```
+
+```
 
 ## Transport
 
@@ -80,15 +83,15 @@ PREP api/user/2?q=lname
 
 #### Message type
 
-* REQ - action request sent from *Proxy* (PUSH 1) to the Registry (PULL 2) and forwarded (PUB 3) to  a Service (SUB 4)
-* REP - action reply sent from the Client (PUSH 5) to the Registry (PULL 6) and sent back (PUSH 7) to proxy
-* PREQ - partial (internal) request sent from the Service (PUSH 5) to the Registry (PULL 6) and sent back (PUB 3) to another Service (SUB 4)
-* PREP - partial (internal) reply sent from (PUSH) service and sent back (PUSH) to service
+* REQ - action request sent from *Consumer* (PUSH 1) to the Distributor (PULL 2) and forwarded (PUB 3) to  a Provider (SUB 4)
+* REP - action reply sent from the Client (PUSH 5) to the Distributor (PULL 6) and sent back (PUSH 7) to Consumer
+* PREQ - partial (internal) request sent from the Provider (PUSH 5) to the Distributor (PULL 6) and sent back (PUB 3) to another Provider (SUB 4)
+* PREP - partial (internal) reply sent from (PUSH) Provider and sent back (PUSH) to Provider
 
 #### Message pattern
 
 Action pattern is regular request string used for pattern matching.
-It allows Service Clients to subscribe only to messages they are interested in, eg.:
+It allows Provider Clients to subscribe only to messages they are interested in, eg.:
 ```
 api/user/4?q=fname
 ```
@@ -104,32 +107,30 @@ It is expected to be a JSON string, regular stringified data object, eg.:
 
 ## Components
 
-### Request Client
+### Consumer Client
 
-* Parses and registers requests internally.
-* Sends request action messages (PUSH).
-* Collects request action results (PULL).
-* Responds to original request, eg: responds to HTTP(s) request.
+* Sends consumer requests to the Distributor (PUSH).
+* Collects completed responses (PULL).
+* Digest responses, eg: it could respond to HTTP(s) request.
 
-### Registry
+### Distributor
 
-* Collects required actions (PULL).
-* Registers collected actions internally.
-* Broadcasts collected actions (PUB) for processing.
-* Receives processed results (PULL).
-* Pushes back collected results (PUSH).
+* Listens for Consumer requests (PULL).
+* Broadcasts Consumer requests (PUB) for processing.
+* Listens for completed results (PULL).
+* Forwards completed results back to Consumer Client (PUSH).
 
-### Service(s)
+### Provider(s)
 
-* Listens for incoming action messages (SUB).
-* Performs required actions.
-* Sends result back to Registry (PUSH).
+* Listens for Distributor messages (SUB).
+* Digest requests performing required actions.
+* Sends result back to Distributor (PUSH).
 
 ## Known limitations
 
 This pattern requires additional implementation of handling more than one
-service client subscribed to the same message pattern.
+Provider client subscribed to the same message pattern.
 
 Request Client has been simplified for the demo purposes.
 In practice it would require internal queuing to store incoming HTTP requests
-until it receives REP message from the registry.
+until it receives REP message from the Distributor.
