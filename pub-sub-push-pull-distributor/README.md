@@ -22,9 +22,9 @@ node user-provider-client.js
 node consumer-client.js
 ```
 
-> It is important you run `Distributor-client` before you run `service-client`
+> Start other services before starting `consumer-client`
 
-Run `Distributor-client` as the last service to keep PUB-SUB connection in sync.
+Run Distributor as the last service to keep PUB-SUB connection in sync.
 Otherwise, Distributor will publish messages and because of missing subscribers they will be dropped.
 
 If have similar architecture in production order of starting services doesn't really matter.
@@ -46,21 +46,54 @@ communication between the Consumer and the Distributor allowing:
 
 ```
 .                                                   +---------------+
-                         +---------------+       +---------------+  |
-                         |     PUB (3)   o--->---|  (4) SUB      |--+
- +---------------+       +---------------+       +---------------+  |
- |               |       |               |       |               |  |
- |   Consumer    |       |  Distributor  |       |    Provider   |  |
- |   client      |       |   server      |       |    client(s)  |  |
- |               |       |               |       |               |  |
- |               |       |               |       |               |--+
- +---------------+       +---------------+       +---------------+  |
- |     PUSH (1)  |--->---o  (2) PULL (6) o---<---|  (5) PUSH     |--+
- +---------------+       +---------------+       +---------------+
- |     PULL (8)  |---<---o  (7) PUSH     |
- +---------------+       +---------------+
+                         +----------------+       +---------------+  |
+                         |   PUB (2,4,6)  o--->---|      SUB      |--+
+ +---------------+       +----------------+       +---------------+  |
+ |               |       |                |       |               |  |
+ |   Consumer    |       |  Distributor   |       |    Provider   |  |
+ |   client      |       |    server      |       |    client(s)  |  |
+ |               |       |                |       |               |  |
+ |               |       |                |       |               |--+
+ +---------------+       +----------------+       +---------------+  |
+ |    PUSH (1)   |--->---o      PULL      o---<---|  PUSH (3,5,7) |--+
+ +---------------+       +----------------+       +---------------+
+ |     PULL      |---<---o     PUSH (8)   |
+ +---------------+       +----------------+
 
 ```
+
+## Data flow
+
+* Consumer client service receives an external request (_not implemented_)
+* Consumer registers external request as pending (_not implemented_)
+* Consumer sends request REQ type message via PUSH (1) socket,
+* Distributor receives Consumer request REQ via PULL
+* Distributor broadcasts Consumer request REQ via PUB (2)
+* Provider receives Consumer request REQ via SUB
+* Provider processes request
+  * Provider caches REQ for internal processing
+  * Provider sends internal request PREQ via PUSH (3)
+  * Distributor receives internal request PREQ on PULL
+  * Distributor broadcasts (forwards) internal request PREQ on PUB (4)
+  * Corresponding Provider receives request PREQ via SUB
+  * Corresponding Provider processes internal request
+  * Provider processes request (_more internal requests if needed_)
+  * Provider sends internal reply PREP via PUSH (5)
+  * Distributor receives internal reply PREP on PULL
+  * Distributor broadcasts internal reply PREP via PUB (6)
+  * Provider receives internal reply PREP on SUB
+* Provider finalizes REQ processing
+  * Provider removes request from cache (_if internal processing occurred_)
+* Provider sends reply REP via PUSH (7)
+* Distributor receives request on PULL
+* Distributor forwards reply REP on PUSH (8)
+* Consumer service receives final response REP on PULL
+* Consumer responds to original client request with final response REP (_not implemented_)
+
+* Distributor receives client request on PULL 2 connection  and forwarded (PUB 3) to  a Provider (SUB 4)
+* REP - action reply sent from the Client (PUSH 5) to the Distributor (PULL 6) and sent back (PUSH 7) to Consumer
+* PREQ - partial (internal) request sent from the Provider (PUSH 5) to the Distributor (PULL 6) and sent back (PUB 3) to another Provider (SUB 4)
+* PREP - partial (internal) reply sent from (PUSH) Provider and sent back (PUSH) to Provider
 
 ## Transport
 
@@ -83,10 +116,10 @@ PREP api/user/2?q=lname
 
 #### Message type
 
-* REQ - action request sent from *Consumer* (PUSH 1) to the Distributor (PULL 2) and forwarded (PUB 3) to  a Provider (SUB 4)
-* REP - action reply sent from the Client (PUSH 5) to the Distributor (PULL 6) and sent back (PUSH 7) to Consumer
-* PREQ - partial (internal) request sent from the Provider (PUSH 5) to the Distributor (PULL 6) and sent back (PUB 3) to another Provider (SUB 4)
-* PREP - partial (internal) reply sent from (PUSH) Provider and sent back (PUSH) to Provider
+* REQ - consumer request message
+* REP - provider reply message
+* PREQ - partial request message, internal provider request message
+* PREP - partial reply message, internal provider reply
 
 #### Message pattern
 
@@ -125,6 +158,7 @@ It is expected to be a JSON string, regular stringified data object, eg.:
 * Listens for Distributor messages (SUB).
 * Digest requests performing required actions.
 * Sends result back to Distributor (PUSH).
+
 
 ## Known limitations
 
