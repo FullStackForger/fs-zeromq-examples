@@ -96,7 +96,21 @@ communication between the Consumer and the Distributor allowing:
 Services uses 2-part messages to communicate with each other. Message consists
 of message header and message data.
 
-Sending a message to a socket is achieved using 0MQ API. 
+Sending a message to a socket is achieved using 0MQ API, eg:
+```
+socket.send(['REQ /api/user/10', '{id: 123}])
+```
+
+Receiving message requires converting buffer data to string before parsing, eg:
+```
+subScok.on('message', function() {
+	let msgHeader = arguments[0].toString()
+	let msgData = JSON.parse(arguments[1].toString())
+	let msgHeaderArguments = msgHeader.split(' ')
+	let msgType = msgHeaderArguments[0]
+	let msgPattern = msgHeaderArguments[1]
+)}
+```
 
 ### Message Header
 
