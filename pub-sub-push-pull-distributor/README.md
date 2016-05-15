@@ -14,7 +14,8 @@ us REQ-REP lock-step.
 
 ## Demo
 
-For best console log run in 3 separate terminals
+For best console log output start services from separate terminals.
+
 ```
 node distributor-server.js
 node device-provider-client.js
@@ -53,7 +54,7 @@ PULL	 REP api/device/t0t411y-n0n-3x1st1ng-ud1d-num63r {"id":6,"data":null,"error
 ```
 
 First column are in order: is a socket connection type, request type,
-request pattern and optionally received data. 
+request pattern and optionally received data.
 
 ## Overview
 
