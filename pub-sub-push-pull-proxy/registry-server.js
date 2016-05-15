@@ -1,14 +1,13 @@
 'use strict'
-var zmq = require('zmq')
+const zmq = require('zmq')
 
 process.stdin.resume()
 //require('tty').setRawMode(true)
 
-var
-  pullSock = zmq.socket('pull'),
-  pushSock = zmq.socket('push'),
-  pubSock = zmq.socket('pub'),
-  actions = [] // {id, pattern}
+const pullSock = zmq.socket('pull')
+const pushSock = zmq.socket('push')
+const pubSock = zmq.socket('pub')
+const actions = [] // {id, pattern}
 
 pullSock.bindSync("tcp://*:5000")
 pushSock.bindSync("tcp://*:5001")

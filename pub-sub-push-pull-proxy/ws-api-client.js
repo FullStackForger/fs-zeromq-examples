@@ -1,14 +1,12 @@
 'use strict'
-
-var
-  http = require('http'),
-  url = require('url'),
-  zmq = require('zmq'),
-  addr = '127.0.0.1',
-  port = 4000,
-  pushSock = zmq.socket('push'),
-  subSock = zmq.socket('sub'),
-	patternFilter = '/api'
+const http = require('http')
+const url = require('url')
+const zmq = require('zmq')
+const addr = '127.0.0.1'
+const port = 4000
+const pushSock = zmq.socket('push')
+const subSock = zmq.socket('sub')
+const patternFilter = '/api'
 
 pushSock
   .connect("tcp://localhost:5000")

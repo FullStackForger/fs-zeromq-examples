@@ -1,15 +1,15 @@
 'use strict'
-var
-  http = require('http'),
-  url = require('url'),
-  zmq = require('zmq'),
-  httpProxy = require('http-proxy'),
-  pushSock = zmq.socket('push'),
-  pullSock = zmq.socket('pull'),
-  proxy = httpProxy.createProxyServer({}),
-  cache = [], 				// Array of records { pathname, address }
-  reqTimeout = 150,		// max time (ms) proxy will wait before timing out request
-  reqInterval = 10		// how ofter
+const http = require('http')
+const url = require('url')
+const zmq = require('zmq')
+const httpProxy = require('http-proxy')
+const pushSock = zmq.socket('push')
+const pullSock = zmq.socket('pull')
+const proxy = httpProxy.createProxyServer({})
+
+const reqTimeout = 150		// max time (ms) proxy will wait before timing out request
+const reqInterval = 10		// how ofter
+var cache = []   				  // Array of records { pathname, address }
 
 pushSock.connect("tcp://localhost:5000")
 pullSock.connect("tcp://localhost:5001")
