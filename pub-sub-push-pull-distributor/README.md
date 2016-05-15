@@ -16,7 +16,7 @@ us REQ-REP lock-step.
 
 For best console log run in 3 separate terminals
 ```
-node Distributor-server.js
+node distributor-server.js
 node device-provider-client.js
 node user-provider-client.js
 node consumer-client.js
