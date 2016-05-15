@@ -27,10 +27,11 @@ node consumer-client.js
 Run Distributor as the last service to keep PUB-SUB connection in sync.
 Otherwise, Distributor will publish messages and because of missing subscribers they will be dropped.
 
-If have similar architecture in production order of starting services doesn't really matter.
-Some request will not be processed either way as it takes time to:
+Note that in similar architecture in production order of starting services doesn't really matter.
+Not all requests in real life will be processed either way as it takes time to:
 1. Startup the service.
 2. Establish connection between services.
+There are ways to mitigate that. Find out more in 0MQ official guide.
 
 ## Overview
 
