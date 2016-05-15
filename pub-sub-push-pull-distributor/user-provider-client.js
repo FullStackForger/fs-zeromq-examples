@@ -82,9 +82,11 @@ subScok.on('message', function() {
 			}
 
 			// reply without devices
-			if (user === null) {
+			if (user === null || !user.devices || user.devices.length === 0) {
 				let respHeader = ['REP', msgPattern].join(' ')
-				request.respData.error = `User ${msgData.id} not found`
+				if (user === null) {
+					request.respData.error = `User id: ${msgData.id} not found`
+				}
 				let respData = JSON.stringify(request.respData)
 				console.log('PUSH\t', respHeader, respData)
 				pushSock.send([ respHeader, respData ])
@@ -135,6 +137,9 @@ subScok.on('message', function() {
 				let respData = JSON.stringify(request.respData)
 				console.log('PUSH\t', respHeader, respData)
 				pushSock.send([ respHeader, respData ])
+
+				// remove request from the cache
+				requestQueue.splice(index, 1);
 			}
 			break;
 	}
