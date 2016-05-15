@@ -33,6 +33,28 @@ Not all requests in real life will be processed either way as it takes time to:
 2. Establish connection between services.
 There are ways to mitigate that. Find out more in 0MQ official guide.
 
+Emulating consumer requests has been delayed for consistent demo output.
+If you look at Consumer client log you should get:
+```
+PUSH	 REQ api/user/0 {"uri":"api/user/0","id":0}
+PULL	 REP api/device/ef04a3e0-fb22-4555-bcf0-e950298b3689 {"id":0,"data":{"userId":0,"name":"John Smith","devices":[{"udid":"fb6f363b-2b8a-47da-99f6-021cabc1042a","agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36"},{"udid":"ef04a3e0-fb22-4555-bcf0-e950298b3689","agent":"Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"}]}}
+PUSH	 REQ api/user/1 {"uri":"api/user/1","id":1}
+PULL	 REP api/device/8da15b33-6f34-493c-b11e-d5437b9f7072 {"id":1,"data":{"userId":1,"name":"Tom Blake","devices":[{"udid":"8da15b33-6f34-493c-b11e-d5437b9f7072","agent":"Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"}]}}
+PUSH	 REQ api/user/2 {"uri":"api/user/2","id":2}
+PULL	 REP api/device/d881d9c8-eae6-4aab-a6aa-e981d911310f {"id":2,"data":{"userId":2,"name":"Peter Black","devices":[{"udid":"d881d9c8-eae6-4aab-a6aa-e981d911310f","agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2486.0 Safari/537.36 Edge/13.10586"}]}}
+PUSH	 REQ api/user/3 {"uri":"api/user/3","id":3}
+PULL	 REP api/user/3 {"id":3,"data":{"userId":3,"name":"Julia Stiles","devices":[]}}
+PUSH	 REQ api/user/666 {"uri":"api/user/666","id":4}
+PULL	 REP api/user/666 {"id":4,"data":null,"error":"User id: 4 not found"}
+PUSH	 REQ api/device/fb6f363b-2b8a-47da-99f6-021cabc1042a {"uri":"api/device/fb6f363b-2b8a-47da-99f6-021cabc1042a","id":5}
+PULL	 REP api/device/fb6f363b-2b8a-47da-99f6-021cabc1042a {"id":5,"data":{"udid":"fb6f363b-2b8a-47da-99f6-021cabc1042a","agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36"}}
+PUSH	 REQ api/device/t0t411y-n0n-3x1st1ng-ud1d-num63r {"uri":"api/device/t0t411y-n0n-3x1st1ng-ud1d-num63r","id":6}
+PULL	 REP api/device/t0t411y-n0n-3x1st1ng-ud1d-num63r {"id":6,"data":null,"error":"device not found"}
+```
+
+First column are in order: is a socket connection type, request type,
+request pattern and optionally received data. 
+
 ## Overview
 
 PUB-SUB PUSH-PULL is a combination of messaging patterns:
