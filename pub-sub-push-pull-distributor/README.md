@@ -89,22 +89,21 @@ communication between the Consumer and the Distributor allowing:
 * Distributor forwards reply REP on PUSH (8)
 * Consumer service receives final response REP on PULL
 * Consumer responds to original client request with final response REP (_not implemented_)
-
 * Distributor receives client request on PULL 2 connection  and forwarded (PUB 3) to  a Provider (SUB 4)
-* REP - action reply sent from the Client (PUSH 5) to the Distributor (PULL 6) and sent back (PUSH 7) to Consumer
-* PREQ - partial (internal) request sent from the Provider (PUSH 5) to the Distributor (PULL 6) and sent back (PUB 3) to another Provider (SUB 4)
-* PREP - partial (internal) reply sent from (PUSH) Provider and sent back (PUSH) to Provider
 
 ## Transport
 
-Services use 2 part (multipart type) message to communicate.
+Services uses 2-part messages to communicate with each other. Message consists
+of message header and message data.
+
+Sending a message to a socket is achieved using 0MQ API. 
 
 ### Message Header
 
 First part of the message holds pattern information.
-Message Header is simply a string that consists of 2 space separated parts:
-* message type and
-* message pattern string.
+Message Header is a string made of 2 space separated values:
+* message type
+* message pattern
 
 Example message headers:
 ```
@@ -128,7 +127,6 @@ It allows Provider Clients to subscribe only to messages they are interested in,
 ```
 api/user/4?q=fname
 ```
-
 
 ### Message data
 
@@ -158,7 +156,6 @@ It is expected to be a JSON string, regular stringified data object, eg.:
 * Listens for Distributor messages (SUB).
 * Digest requests performing required actions.
 * Sends result back to Distributor (PUSH).
-
 
 ## Known limitations
 
