@@ -39,14 +39,15 @@ http.createServer(function(request, response) {
 			.then(() => {
 				clearInterval(intervalId)
 			})
-
-		let hasTimedOut = Date.now() - requestTime > reqTimeout;
-    if (hasTimedOut) {
-      response.writeHead(504, {"Content-Type": "text/html"})
-      response.write("<h1>504 Gateway Timeout</h1>")
-      response.end()
-      clearInterval(intervalId)
-    }
+      .catch(() => {
+        let hasTimedOut = Date.now() - requestTime > reqTimeout;
+        if (hasTimedOut) {
+          response.writeHead(504, {"Content-Type": "text/html"})
+          response.write("<h1>504 Gateway Timeout</h1>")
+          response.end()
+          clearInterval(intervalId)
+        }
+      })
   }, reqInterval)
 }).listen(8080)
 
