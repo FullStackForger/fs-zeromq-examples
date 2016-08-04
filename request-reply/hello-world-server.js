@@ -21,15 +21,15 @@ responder.on('message', function(request) {
 
   console.log("IN: [", msg, "]")
   msg.respNo = 0
-  setTimeout(() => { responder.send(JSON.stringify(rpl)) }, 1000);
-});
+  setTimeout(() => { responder.send(JSON.stringify(rpl)) }, 1000)
+})
 
 responder.bind('tcp://*:5555', function(err) {
   if (err) throw err
-  console.log("Listening on 5555…");
-});
+  console.log("Listening on 5555…")
+})
 
 
 process.on('SIGINT', function() {
-  responder.close();
-});
+  responder.close()
+})
